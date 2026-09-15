@@ -1,0 +1,10 @@
+{
+  "name": "Signconnect",
+  "description": "AI-powered real-time bidirectional communication platform that bridges Indian Sign Language users and non-sign-language users through continuous ISL recognition, text and voice translation, and validated 3D avatar-based ISL communication.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signconnect</title>
+    <meta name="description" content="AI-powered real-time bidirectional communication platform that bridges Indian Sign Language users and non-sign-language users through continuous ISL recognition, text and voice translation, and validated 3D avatar-based ISL communication." />
+    <meta property="og:title" content="Signconnect" />
+    <meta property="og:description" content="AI-powered real-time bidirectional communication platform that bridges Indian Sign Language users and non-sign-language users through continuous ISL recognition, text and voice translation, and validated 3D avatar-based ISL communication." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤟</text></svg>" />
+    <script>
+      // Protect against properties defined with only a getter on window (such as window.fetch or window.WebSocket)
+      (function () {
+        const origDefineProperty = Object.defineProperty;
+        Object.defineProperty = function (obj, prop, descriptor) {
+          if (
+            (obj === window || (typeof globalThis !== 'undefined' && obj === globalThis)) &&
+            descriptor &&
+            typeof descriptor.get === 'function' &&
+            typeof descriptor.set !== 'function'
+          ) {
+            let overrideValue;
+            let hasOverride = false;
+            const origGet = descriptor.get;
+            return origDefineProperty(obj, prop, {
+              ...descriptor,
+              configurable: true,
+              get: function () {
+                if (hasOverride) return overrideValue;
+                return origGet.call(this);
+              },
+              set: function (val) {
+                overrideValue = val;
+                hasOverride = true;
+              },
+            });
+          }
+          return origDefineProperty(obj, prop, descriptor);
+        };
+      })();
+
+      // Gracefully handle Vite HMR websocket in Cloud Run sandbox where HMR server is disabled
+      (function () {
+        const NativeWebSocket = window.WebSocket;
+        if (!NativeWebSocket) return;
+
+        class MockHmrSocket extends EventTarget {
+          constructor() {
+            super();
+            this.readyState = 1; // WebSocket.OPEN
+            this.OPEN = 1;
+            this.CLOSED = 3;
+            this.CLOSING = 2;
+            this.CONNECTING = 0;
+            this.binaryType = 'blob';
+            this.bufferedAmount = 0;
+            this.extensions = '';
+            this.protocol = 'vite-hmr';
+            this.url = '';
+          }
+          send() {}
+          close() {
+            this.readyState = 3;
+            this.dispatchEvent(new Event('close'));
+          }
+        }
+
+        function ProxiedWebSocket(url, protocols) {
+          const isHmr =
+            protocols === 'vite-hmr' ||
+            (Array.isArray(protocols) && protocols.includes('vite-hmr')) ||
+            (typeof url === 'string' && (url.includes('vite-hmr') || (url.includes('token=') && url.includes('3000'))));
+          if (isHmr) {
+            return new MockHmrSocket();
+          }
+          return Reflect.construct(NativeWebSocket, arguments, new.target || NativeWebSocket);
+        }
+
+        ProxiedWebSocket.prototype = NativeWebSocket.prototype;
+        Object.keys(NativeWebSocket).forEach((k) => {
+          try {
+            ProxiedWebSocket[k] = NativeWebSocket[k];
+          } catch (_) {}
+        });
+        ProxiedWebSocket.OPEN = 1;
+        ProxiedWebSocket.CONNECTING = 0;
+        ProxiedWebSocket.CLOSING = 2;
+        ProxiedWebSocket.CLOSED = 3;
+
+        window.WebSocket = ProxiedWebSocket;
+
+        // Suppress any stray benign Vite HMR websocket connection errors without triggering console wrappers
+        const _origConsoleError = console.error;
+        console.error = function (...args) {
+          if (typeof args[0] === 'string' && args[0].includes('failed to connect to websocket')) {
+            return;
+          }
+          _origConsoleError.apply(console, args);
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
