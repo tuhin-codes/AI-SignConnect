@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Raw dataset storage (Milestone 6B-6)
+datasets/isl-csltr/*
+!datasets/README.md
+!datasets/isl-csltr/README.md
+!datasets/isl-csltr/MANIFEST.md

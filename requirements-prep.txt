@@ -1,0 +1,6 @@
+# SignConnect — Offline Python Preprocessing Foundation Dependencies
+# Milestone 6B-9C-1
+numpy>=1.24.0
+pandas>=2.0.0
+Pillow>=10.0.0
+openpyxl>=3.1.0
